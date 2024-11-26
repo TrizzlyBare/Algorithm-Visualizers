@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./BubbleSort.css";
+import "../../../styles/BubbleSort.css";
 
 const BubbleSort: React.FC = () => {
   const [array, setArray] = useState<number[]>([5, 3, 8, 4, 2]);

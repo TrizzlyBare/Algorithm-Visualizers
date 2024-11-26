@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./QuickSort.css";
+import "../../../styles/QuickSort.css";
 
 interface SortStep {
   array: number[];

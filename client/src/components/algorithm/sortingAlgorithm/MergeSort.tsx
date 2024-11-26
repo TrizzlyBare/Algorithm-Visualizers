@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./MergeSort.css";
+import "../../../styles/MergeSort.css";
 
 interface SortStep {
   array: number[];
