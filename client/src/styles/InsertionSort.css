@@ -1,0 +1,101 @@
+.sort-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.array-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 20px 0;
+  flex-direction: row;
+  height: 400px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.array-bar {
+  width: 30px;
+  margin: 0 5px;
+  background-color: #61dafb;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  transition: all 0.5s ease;
+  border-radius: 4px 4px 0 0;
+}
+
+.array-bar.current {
+  background-color: #ff4081;
+}
+
+.array-bar.comparing {
+  background-color: #ff9800;
+}
+
+.array-bar.sorted {
+  background-color: #4caf50;
+}
+
+.controls-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.control-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #61dafb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  min-width: 100px;
+}
+
+.control-button:hover:not(:disabled) {
+  background-color: #4fa8d3;
+}
+
+.control-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.speed-control {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.speed-select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #61dafb;
+  background-color: white;
+  cursor: pointer;
+}
+
+.step-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+@media (max-width: 600px) {
+  .array-bar {
+    width: 20px;
+    margin: 0 3px;
+  }
+
+  .control-button {
+    padding: 6px 12px;
+    min-width: 80px;
+  }
+}

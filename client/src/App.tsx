@@ -1,7 +1,12 @@
 import "./App.css";
-import BubbleSort from "./components/algorithm/sortingAlgorithm/BubbleSort";
-import QuickSort from "./components/algorithm/sortingAlgorithm/QuickSort";
+import BubbleSort from "./components/algorithm/sortingAlgorithm/bubbleSort";
+import QuickSort from "./components/algorithm/sortingAlgorithm/quickSort";
 import MergeSort from "./components/algorithm/sortingAlgorithm/MergeSort";
+import SelectionSort from "./components/algorithm/sortingAlgorithm/SelectionSort";
+import InsertionSort from "./components/algorithm/sortingAlgorithm/InsertionSort";
+import HeapSort from "./components/algorithm/sortingAlgorithm/HeapSort";
+import CycleSort from "./components/algorithm/sortingAlgorithm/CycleSort";
+import ThreeWayMergeSort from "./components/algorithm/sortingAlgorithm/ThreeWayMergeSort";
 
 function App() {
   return (
@@ -9,6 +14,11 @@ function App() {
       <BubbleSort />
       <QuickSort />
       <MergeSort />
+      <SelectionSort />
+      <InsertionSort />
+      <HeapSort />
+      <CycleSort />
+      <ThreeWayMergeSort />
     </>
   );
 }
