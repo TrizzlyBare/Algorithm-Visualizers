@@ -58,7 +58,6 @@ const InsertionSort: React.FC = () => {
     const n = arr.length;
     const sortedIndices: number[] = [0];
 
-    // Initial state
     steps.push({
       array: [...arr],
       currentIndex: -1,
@@ -70,7 +69,6 @@ const InsertionSort: React.FC = () => {
       const key = arr[i];
       let j = i - 1;
 
-      // Show current element being inserted
       steps.push({
         array: [...arr],
         currentIndex: i,
@@ -79,7 +77,6 @@ const InsertionSort: React.FC = () => {
       });
 
       while (j >= 0 && arr[j] > key) {
-        // Show comparison
         steps.push({
           array: [...arr],
           currentIndex: i,
@@ -87,7 +84,6 @@ const InsertionSort: React.FC = () => {
           sorted: [...sortedIndices],
         });
 
-        // Shift element
         arr[j + 1] = arr[j];
         steps.push({
           array: [...arr],
@@ -99,7 +95,6 @@ const InsertionSort: React.FC = () => {
         j = j - 1;
       }
 
-      // Place key in correct position
       arr[j + 1] = key;
       sortedIndices.push(i);
 

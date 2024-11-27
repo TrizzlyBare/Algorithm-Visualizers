@@ -63,7 +63,6 @@ const CycleSort: React.FC = () => {
     let writes = 0;
     const sorted: number[] = [];
 
-    // Initial state
     steps.push({
       array: [...arr],
       currentItem: -1,
@@ -79,7 +78,6 @@ const CycleSort: React.FC = () => {
       let item = arr[cycleStart];
       let pos = cycleStart;
 
-      // Find where to put the item
       steps.push({
         array: [...arr],
         currentItem: item,
@@ -108,7 +106,6 @@ const CycleSort: React.FC = () => {
         }
       }
 
-      // If item is already in correct position
       if (pos === cycleStart) {
         sorted.push(cycleStart);
         steps.push({
@@ -124,7 +121,6 @@ const CycleSort: React.FC = () => {
         continue;
       }
 
-      // Put the item to its right position
       while (item === arr[pos]) {
         pos += 1;
       }
@@ -157,7 +153,6 @@ const CycleSort: React.FC = () => {
           sorted: [...sorted.concat(pos)],
         });
 
-        // Put remaining elements to their correct places
         while (pos !== cycleStart) {
           pos = cycleStart;
 
@@ -214,7 +209,6 @@ const CycleSort: React.FC = () => {
       }
     }
 
-    // Mark last element as sorted
     sorted.push(n - 1);
     steps.push({
       array: [...arr],

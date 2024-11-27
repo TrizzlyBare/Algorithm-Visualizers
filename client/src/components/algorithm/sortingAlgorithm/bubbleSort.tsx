@@ -39,7 +39,6 @@ const BubbleSort: React.FC = () => {
     setCurrentIndex((prev) => prev + 1);
     setComparingIndex(currentIndex + 1);
 
-    // Check if array is sorted
     const isSorted = newArray.every(
       (num, index) => index === 0 || newArray[index - 1] <= num
     );

@@ -60,7 +60,6 @@ const HeapSort: React.FC = () => {
   const generateHeapSortSteps = (arr: number[], steps: SortStep[]) => {
     const n = arr.length;
 
-    // Initial state
     steps.push({
       array: [...arr],
       heapRoot: -1,
@@ -71,12 +70,10 @@ const HeapSort: React.FC = () => {
       message: "Starting heap construction",
     });
 
-    // Build heap
     for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
       heapify(arr, n, i, steps, []);
     }
 
-    // Extract elements from heap one by one
     const sorted: number[] = [];
     for (let i = n - 1; i > 0; i--) {
       steps.push({
@@ -89,7 +86,6 @@ const HeapSort: React.FC = () => {
         message: `Extracting maximum element ${arr[0]}`,
       });
 
-      // Move current root to end
       [arr[0], arr[i]] = [arr[i], arr[0]];
       sorted.unshift(i);
 
@@ -103,7 +99,6 @@ const HeapSort: React.FC = () => {
         message: "Heapifying remaining elements",
       });
 
-      // Call heapify on the reduced heap
       heapify(arr, i, 0, steps, sorted);
     }
 

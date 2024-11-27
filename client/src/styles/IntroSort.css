@@ -1,0 +1,133 @@
+/* Introsort.css */
+
+.sort-container {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.message-box {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+  min-height: 50px;
+}
+
+.array-section {
+  margin-bottom: 20px;
+}
+
+.array-display {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 300px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.array-bar {
+  width: 30px;
+  margin: 0 2px;
+  background-color: #3498db;
+  transition: height 0.3s ease;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+}
+
+.array-bar.active {
+  background-color: #e74c3c;
+}
+
+.array-bar.sorted {
+  background-color: #2ecc71;
+}
+
+.array-bar.current-subarray {
+  border: 2px solid #f39c12;
+}
+
+.phase-indicator {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.controls-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.speed-control {
+  margin-right: 20px;
+}
+
+.speed-select {
+  padding: 5px;
+  font-size: 14px;
+}
+
+.controls-container {
+  display: flex;
+  gap: 10px;
+}
+
+.control-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.control-button:hover {
+  background-color: #2980b9;
+}
+
+.control-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.step-info {
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .array-display {
+    height: 200px;
+  }
+
+  .array-bar {
+    width: 20px;
+    font-size: 10px;
+  }
+
+  .controls-container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .control-button {
+    margin: 5px;
+  }
+}
