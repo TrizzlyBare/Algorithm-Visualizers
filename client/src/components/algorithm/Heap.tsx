@@ -1,5 +1,6 @@
+// HeapVisualizer.tsx
 import React, { useState, useEffect } from "react";
-import "./HeapVisualizer.css";
+import "../../styles/HeapVisualizer.css";
 
 interface HeapStep {
   heap: number[];
@@ -8,6 +9,18 @@ interface HeapStep {
   message: string;
 }
 
+const calculateLevelWidth = (level: number): number => Math.pow(2, level);
+
+const calculateNodePosition = (level: number, position: number, totalLevels: number): { x: number, y: number } => {
+  const levelWidth = calculateLevelWidth(level);
+  const spacing = 800 / (levelWidth + 1);
+  const verticalSpacing = 400 / (totalLevels + 1);
+  return {
+    x: spacing * (position + 1),
+    y: verticalSpacing * (level + 1)
+  };
+};
+
 const HeapVisualizer: React.FC = () => {
   const [heap, setHeap] = useState<number[]>([]);
   const [inputValue, setInputValue] = useState<string>("");
@@ -15,10 +28,15 @@ const HeapVisualizer: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [speed, setSpeed] = useState<number>(500);
+  const [isMaxHeap, setIsMaxHeap] = useState(true);
 
   const getParentIndex = (index: number) => Math.floor((index - 1) / 2);
   const getLeftChildIndex = (index: number) => 2 * index + 1;
   const getRightChildIndex = (index: number) => 2 * index + 2;
+
+  const compareNodes = (a: number, b: number) => {
+    return isMaxHeap ? a >= b : a <= b;
+  };
 
   const generateSteps = (currentHeap: number[], operation: 'insert' | 'remove', value?: number) => {
     const newSteps: HeapStep[] = [];
@@ -44,7 +62,7 @@ const HeapVisualizer: React.FC = () => {
           message: `Comparing ${tempHeap[currentIndex]} with parent ${tempHeap[parentIndex]}`
         });
 
-        if (tempHeap[parentIndex] >= tempHeap[currentIndex]) break;
+        if (compareNodes(tempHeap[parentIndex], tempHeap[currentIndex])) break;
 
         newSteps.push({
           heap: [...tempHeap],
@@ -64,7 +82,7 @@ const HeapVisualizer: React.FC = () => {
         heap: [...tempHeap],
         comparing: [],
         swapping: [0],
-        message: `Removing maximum element: ${removedValue}`
+        message: `Removing ${isMaxHeap ? 'maximum' : 'minimum'} element: ${removedValue}`
       });
 
       tempHeap[0] = tempHeap[tempHeap.length - 1];
@@ -73,7 +91,7 @@ const HeapVisualizer: React.FC = () => {
       if (tempHeap.length > 0) {
         let currentIndex = 0;
         while (true) {
-          let largestIndex = currentIndex;
+          let targetIndex = currentIndex;
           const leftChild = getLeftChildIndex(currentIndex);
           const rightChild = getRightChildIndex(currentIndex);
 
@@ -84,27 +102,27 @@ const HeapVisualizer: React.FC = () => {
             message: "Comparing with children"
           });
 
-          if (leftChild < tempHeap.length && tempHeap[leftChild] > tempHeap[largestIndex]) {
-            largestIndex = leftChild;
+          if (leftChild < tempHeap.length && !compareNodes(tempHeap[targetIndex], tempHeap[leftChild])) {
+            targetIndex = leftChild;
           }
 
-          if (rightChild < tempHeap.length && tempHeap[rightChild] > tempHeap[largestIndex]) {
-            largestIndex = rightChild;
+          if (rightChild < tempHeap.length && !compareNodes(tempHeap[targetIndex], tempHeap[rightChild])) {
+            targetIndex = rightChild;
           }
 
-          if (largestIndex === currentIndex) break;
+          if (targetIndex === currentIndex) break;
 
           newSteps.push({
             heap: [...tempHeap],
             comparing: [],
-            swapping: [currentIndex, largestIndex],
-            message: `Swapping ${tempHeap[currentIndex]} with ${tempHeap[largestIndex]}`
+            swapping: [currentIndex, targetIndex],
+            message: `Swapping ${tempHeap[currentIndex]} with ${tempHeap[targetIndex]}`
           });
 
-          [tempHeap[currentIndex], tempHeap[largestIndex]] = 
-          [tempHeap[largestIndex], tempHeap[currentIndex]];
+          [tempHeap[currentIndex], tempHeap[targetIndex]] = 
+          [tempHeap[targetIndex], tempHeap[currentIndex]];
           
-          currentIndex = largestIndex;
+          currentIndex = targetIndex;
         }
       }
     }
@@ -178,21 +196,145 @@ const HeapVisualizer: React.FC = () => {
     return className;
   };
 
+  const getNodeClassName = (index: number) => {
+    if (!steps[currentStep]) return "heap-node";
+
+    const { comparing, swapping } = steps[currentStep];
+    let className = "heap-node";
+
+    if (comparing.includes(index)) {
+      className += " comparing";
+    } else if (swapping.includes(index)) {
+      className += " swapping";
+    }
+
+    return className;
+  };
+
+  const renderHeapTree = () => {
+    if (!steps[currentStep]?.heap.length) return null;
+
+    const heap = steps[currentStep].heap;
+    const edges: JSX.Element[] = [];
+    const nodes: JSX.Element[][] = [];
+    const totalLevels = Math.floor(Math.log2(heap.length)) + 1;
+
+    for (let level = 0; level < totalLevels; level++) {
+      const levelNodes: JSX.Element[] = [];
+      const startIndex = Math.pow(2, level) - 1;
+      const endIndex = Math.min(Math.pow(2, level + 1) - 1, heap.length);
+
+      for (let i = startIndex; i < endIndex; i++) {
+        const position = i - startIndex;
+        const { x, y } = calculateNodePosition(level, position, totalLevels);
+        
+        const leftChild = 2 * i + 1;
+        const rightChild = 2 * i + 2;
+
+        if (leftChild < heap.length) {
+          const childPos = calculateNodePosition(level + 1, leftChild - (Math.pow(2, level + 1) - 1), totalLevels);
+          const angle = Math.atan2(childPos.y - y, childPos.x - x);
+          const length = Math.sqrt(Math.pow(childPos.x - x, 2) + Math.pow(childPos.y - y, 2));
+          
+          edges.push(
+            <div
+              key={`edge-${i}-${leftChild}`}
+              className="heap-edge"
+              style={{
+                left: `${x}px`,
+                top: `${y}px`,
+                width: `${length}px`,
+                transform: `rotate(${angle}rad)`
+              }}
+            />
+          );
+        }
+
+        if (rightChild < heap.length) {
+          const childPos = calculateNodePosition(level + 1, rightChild - (Math.pow(2, level + 1) - 1), totalLevels);
+          const angle = Math.atan2(childPos.y - y, childPos.x - x);
+          const length = Math.sqrt(Math.pow(childPos.x - x, 2) + Math.pow(childPos.y - y, 2));
+          
+          edges.push(
+            <div
+              key={`edge-${i}-${rightChild}`}
+              className="heap-edge"
+              style={{
+                left: `${x}px`,
+                top: `${y}px`,
+                width: `${length}px`,
+                transform: `rotate(${angle}rad)`
+              }}
+            />
+          );
+        }
+
+        levelNodes.push(
+          <div
+            key={i}
+            className={getNodeClassName(i)}
+            style={{
+              left: `${x - 20}px`,
+              top: `${y - 20}px`,
+              position: 'absolute'
+            }}
+          >
+            {heap[i]}
+          </div>
+        );
+      }
+      nodes.push(levelNodes);
+    }
+
+    return (
+      <div className="heap-container">
+        {edges}
+        {nodes.flat()}
+      </div>
+    );
+  };
+
   return (
     <div className="sort-container">
-      <h1>Heap Visualizer</h1>
+      <h1>{isMaxHeap ? 'Max' : 'Min'} Heap Visualizer</h1>
       <div className="message-box">{steps[currentStep]?.message}</div>
       
-      <div className="array-container">
-        {steps[currentStep]?.heap.map((value, index) => (
-          <div
-            key={index}
-            className={getBarClassName(index)}
-            style={{ height: `${value * 10}px` }}
-          >
-            {value}
+      <div className="heap-type-control">
+        <label>Heap Type: </label>
+        <select
+          value={isMaxHeap ? 'max' : 'min'}
+          onChange={(e) => {
+            setIsMaxHeap(e.target.value === 'max');
+            setHeap([]);
+            setSteps([]);
+            setCurrentStep(0);
+          }}
+          className="heap-type-select"
+        >
+          <option value="max">Max Heap</option>
+          <option value="min">Min Heap</option>
+        </select>
+      </div>
+
+      <div className="visualizations-container">
+        <div>
+          <div className="visualization-title">Tree View</div>
+          {renderHeapTree()}
+        </div>
+        <div>
+          <div className="visualization-title">Array View</div>
+          <div className="array-container">
+            {steps[currentStep]?.heap.map((value, index) => (
+              <div
+                key={index}
+                className={getBarClassName(index)}
+                style={{ height: `${value * 10}px` }}
+              >
+                {value}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
 
       <div className="controls-container">
@@ -207,7 +349,7 @@ const HeapVisualizer: React.FC = () => {
           Insert
         </button>
         <button onClick={removeMax} className="control-button">
-          Remove Max
+          Remove {isMaxHeap ? 'Max' : 'Min'}
         </button>
         <button
           onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
