@@ -8,6 +8,7 @@ import HeapSort from "./components/algorithm/sortingAlgorithm/HeapSort";
 import CycleSort from "./components/algorithm/sortingAlgorithm/CycleSort";
 import ThreeWayMergeSort from "./components/algorithm/sortingAlgorithm/ThreeWayMergeSort";
 import Heap from "./components/algorithm/Heap";
+import BinaryTree from "./components/algorithm/BinaryTree";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <CycleSort />
       <ThreeWayMergeSort />
       <Heap />
+      <BinaryTree />
     </>
   );
 }
