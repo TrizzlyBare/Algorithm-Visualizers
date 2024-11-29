@@ -1,3 +1,5 @@
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 import BubbleSort from "./components/algorithm/sortingAlgorithm/BubbleSort";
@@ -14,61 +16,36 @@ import BucketSort from "./components/algorithm/sortingAlgorithm/BucketSort";
 import TimSort from "./components/algorithm/sortingAlgorithm/TimSort";
 import CombSort from "./components/algorithm/sortingAlgorithm/CombSort";
 import PigeonholeSort from "./components/algorithm/sortingAlgorithm/PigeonholeSort";
-import Introsort from "./components/algorithm/sortingAlgorithm/IntroSort";
+import Introsort from "./components/algorithm/sortingAlgorithm/Introsort";
 import HomePage from "./components/HomePage/HomePage";
-import Navbar from "./components/NavBar/navbar";
+import Navbar from "./components/NavBar/Navbar";
 import Heap from "./components/algorithm/Heap";
 
 function App() {
   return (
-    <>
-      <HomePage />
-      <BubbleSort />
-      <QuickSort />
-      <MergeSort />
-      <SelectionSort />
-      <InsertionSort />
-      <HeapSort />
-      <CycleSort />
-      <ThreeWayMergeSort />
-
-      <CountingSort />
-      <RadixSort />
-      <BucketSort />
-      <TimSort />
-      <CombSort />
-      <PigeonholeSort />
-      <Heap />
+    <Router>
       <Navbar />
-
-      <Introsort />
-    </>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/bubble-sort" element={<BubbleSort />} />
+        <Route path="/quick-sort" element={<QuickSort />} />
+        <Route path="/merge-sort" element={<MergeSort />} />
+        <Route path="/selection-sort" element={<SelectionSort />} />
+        <Route path="/insertion-sort" element={<InsertionSort />} />
+        <Route path="/heap-sort" element={<HeapSort />} />
+        <Route path="/cycle-sort" element={<CycleSort />} />
+        <Route path="/three-way-merge-sort" element={<ThreeWayMergeSort />} />
+        <Route path="/counting-sort" element={<CountingSort />} />
+        <Route path="/radix-sort" element={<RadixSort />} />
+        <Route path="/bucket-sort" element={<BucketSort />} />
+        <Route path="/tim-sort" element={<TimSort />} />
+        <Route path="/comb-sort" element={<CombSort />} />
+        <Route path="/pigeonhole-sort" element={<PigeonholeSort />} />
+        <Route path="/introsort" element={<Introsort />} />
+        <Route path="/heap" element={<Heap />} />
+      </Routes>
+    </Router>
   );
 }
 
 export default App;
-
-// import React from "react";
-// import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-// import HomePage from "./components/HomePage/HomePage";
-// import Introsort from "./components/algorithm/sortingAlgorithm/IntroSort";
-// import Timsort from "./components/algorithm/sortingAlgorithm/TimSort";
-// import PigeonholeSort from "./components/algorithm/sortingAlgorithm/PigeonholeSort";
-// import CombSort from "./components/algorithm/sortingAlgorithm/CombSort";
-
-// const App: React.FC = () => {
-//   return (
-//     <Router>
-//       <Navbar />
-//       <Routes>
-//         <Route path="/" element={<HomePage />} />
-//         <Route path="/algorithm/introsort" element={<Introsort />} />
-//         <Route path="/algorithm/timsort" element={<Timsort />} />
-//         <Route path="/algorithm/pigeonhole-sort" element={<PigeonholeSort />} />
-//         <Route path="/algorithm/comb-sort" element={<CombSort />} />
-//       </Routes>
-//     </Router>
-//   );
-// };
-
-// export default App;
