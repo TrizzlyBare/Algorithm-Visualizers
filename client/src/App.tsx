@@ -15,6 +15,7 @@ import "./App.css";
 // import PigeonholeSort from "./components/algorithm/sortingAlgorithm/PigeonholeSort";
 // import Introsort from "./components/algorithm/sortingAlgorithm/IntroSort";
 // import HomePage from "./components/HomePage/HomePage";
+import Navbar from "./components/NavBar/navbar";
 
 // function App() {
 //   return (
@@ -54,6 +55,7 @@ import CombSort from "./components/algorithm/sortingAlgorithm/CombSort";
 const App: React.FC = () => {
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/algorithm/introsort" element={<Introsort />} />
