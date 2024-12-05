@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from "react";
-import "../../../styles/HeapSort.css";
+
+// Calculate node positions for a perfect binary tree
+const calculateNodePosition = (
+  level: number,
+  position: number,
+  totalLevels: number
+) => {
+  const verticalSpacing = 80;
+  const width = Math.pow(2, totalLevels) * 60;
+  const horizontalSpacing = width / Math.pow(2, level);
+  const x = horizontalSpacing * (position + 0.5);
+  const y = level * verticalSpacing + 50;
+  return { x, y };
+};
 
 interface SortStep {
   array: number[];
@@ -28,6 +41,7 @@ const HeapSort: React.FC = () => {
     setIsPlaying(false);
   };
 
+  // Rest of the sorting logic remains the same...
   useEffect(() => {
     const newSteps: SortStep[] = [];
     const arr = [...array];
@@ -37,7 +51,6 @@ const HeapSort: React.FC = () => {
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-
     if (isPlaying && currentStep < steps.length - 1) {
       intervalId = setInterval(() => {
         setCurrentStep((prev) => {
@@ -49,7 +62,6 @@ const HeapSort: React.FC = () => {
         });
       }, speed);
     }
-
     return () => {
       if (intervalId) {
         clearInterval(intervalId);
@@ -135,16 +147,12 @@ const HeapSort: React.FC = () => {
       message: `Comparing root ${arr[i]} with its children`,
     });
 
-    if (left < n) {
-      if (arr[left] > arr[largest]) {
-        largest = left;
-      }
+    if (left < n && arr[left] > arr[largest]) {
+      largest = left;
     }
 
-    if (right < n) {
-      if (arr[right] > arr[largest]) {
-        largest = right;
-      }
+    if (right < n && arr[right] > arr[largest]) {
+      largest = right;
     }
 
     if (largest !== i) {
@@ -174,80 +182,151 @@ const HeapSort: React.FC = () => {
     }
   };
 
-  const getBarClassName = (index: number) => {
-    if (!steps[currentStep]) return "array-bar";
+  // Tree visualization component
+  const TreeNode: React.FC<{
+    value: number;
+    index: number;
+    level: number;
+    position: number;
+    totalLevels: number;
+    className: string;
+  }> = ({ value, index, level, position, totalLevels, className }) => {
+    const { x, y } = calculateNodePosition(level, position, totalLevels);
+    const left = 2 * index + 1;
+    const right = 2 * index + 2;
+    const currentArray = steps[currentStep]?.array || [];
 
+    return (
+      <g>
+        {/* Draw lines to children */}
+        {left < currentArray.length && (
+          <line
+            x1={x}
+            y1={y}
+            x2={calculateNodePosition(level + 1, position * 2, totalLevels).x}
+            y2={calculateNodePosition(level + 1, position * 2, totalLevels).y}
+            stroke="#666"
+            strokeWidth="2"
+          />
+        )}
+        {right < currentArray.length && (
+          <line
+            x1={x}
+            y1={y}
+            x2={
+              calculateNodePosition(level + 1, position * 2 + 1, totalLevels).x
+            }
+            y2={
+              calculateNodePosition(level + 1, position * 2 + 1, totalLevels).y
+            }
+            stroke="#666"
+            strokeWidth="2"
+          />
+        )}
+        {/* Draw node */}
+        <circle
+          cx={x}
+          cy={y}
+          r="20"
+          className={className}
+          fill={
+            className.includes("sorted")
+              ? "#4CAF50"
+              : className.includes("heap-root")
+              ? "#FFC107"
+              : className.includes("comparing")
+              ? "#2196F3"
+              : className.includes("swapping")
+              ? "#FF5722"
+              : "#ddd"
+          }
+          stroke="#333"
+          strokeWidth="2"
+        />
+        <text
+          x={x}
+          y={y}
+          textAnchor="middle"
+          dy=".3em"
+          fill="#000"
+          fontSize="14px"
+        >
+          {value}
+        </text>
+      </g>
+    );
+  };
+
+  const getNodeClassName = (index: number) => {
+    if (!steps[currentStep]) return "";
     const { heapRoot, comparing, swapping, sorted } = steps[currentStep];
-    let className = "array-bar";
-
-    if (sorted.includes(index)) {
-      className += " sorted";
-    } else if (index === heapRoot) {
-      className += " heap-root";
-    } else if (comparing.includes(index)) {
-      className += " comparing";
-    } else if (swapping.includes(index)) {
-      className += " swapping";
-    }
-
-    return className;
-  };
-
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleReset = () => {
-    setCurrentStep(0);
-    setIsPlaying(false);
-  };
-
-  const handleSpeedChange = (newSpeed: number) => {
-    setSpeed(newSpeed);
+    if (sorted.includes(index)) return "sorted";
+    if (index === heapRoot) return "heap-root";
+    if (comparing.includes(index)) return "comparing";
+    if (swapping.includes(index)) return "swapping";
+    return "";
   };
 
   return (
-    <div className="sort-container">
-      <h1>Heap Sort Visualization</h1>
-      <div className="message-box">{steps[currentStep]?.message}</div>
-      <div className="array-container">
-        {steps[currentStep]?.array.map((value, index) => (
-          <div
-            key={index}
-            className={getBarClassName(index)}
-            style={{ height: `${value * 20}px` }}
-          >
-            {value}
-          </div>
-        ))}
+    <div className="w-full max-w-4xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Heap Sort Tree Visualization</h1>
+      <div className="bg-gray-100 p-4 mb-4 rounded">
+        {steps[currentStep]?.message}
       </div>
-      <div className="phase-indicator">
+
+      <div className="relative w-full" style={{ height: "400px" }}>
+        <svg width="100%" height="100%" viewBox="0 0 800 400">
+          {steps[currentStep]?.array.map((value, index) => {
+            const level = Math.floor(Math.log2(index + 1));
+            const position = index - Math.pow(2, level) + 1;
+            const totalLevels = Math.floor(Math.log2(array.length)) + 1;
+            return (
+              <TreeNode
+                key={index}
+                value={value}
+                index={index}
+                level={level}
+                position={position}
+                totalLevels={totalLevels}
+                className={getNodeClassName(index)}
+              />
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="mb-4">
         Phase:{" "}
         {steps[currentStep]?.phase === "buildHeap"
           ? "Building Max Heap"
           : "Extracting Maximum"}
       </div>
-      <div className="speed-control">
-        <label>Speed: </label>
+
+      <div className="mb-4">
+        <label className="mr-2">Speed:</label>
         <select
           value={speed}
-          onChange={(e) => handleSpeedChange(Number(e.target.value))}
-          className="speed-select"
+          onChange={(e) => setSpeed(Number(e.target.value))}
+          className="border p-1 rounded"
         >
           <option value={1000}>Slow</option>
           <option value={500}>Medium</option>
           <option value={200}>Fast</option>
         </select>
       </div>
-      <div className="controls-container">
+
+      <div className="flex gap-2">
         <button
           onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
           disabled={currentStep === 0 || isPlaying}
-          className="control-button"
+          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
         >
           Previous
         </button>
-        <button onClick={handlePlayPause} className="control-button">
+        <button
+          onClick={() => setIsPlaying(!isPlaying)}
+          className="px-4 py-2 bg-green-500 text-white rounded"
+        >
           {isPlaying ? "Pause" : "Play"}
         </button>
         <button
@@ -255,18 +334,28 @@ const HeapSort: React.FC = () => {
             setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1))
           }
           disabled={currentStep === steps.length - 1 || isPlaying}
-          className="control-button"
+          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
         >
           Next
         </button>
-        <button onClick={handleReset} className="control-button">
+        <button
+          onClick={() => {
+            setCurrentStep(0);
+            setIsPlaying(false);
+          }}
+          className="px-4 py-2 bg-yellow-500 text-white rounded"
+        >
           Reset
         </button>
-        <button onClick={generateRandomArray} className="control-button">
+        <button
+          onClick={generateRandomArray}
+          className="px-4 py-2 bg-purple-500 text-white rounded"
+        >
           New Array
         </button>
       </div>
-      <div className="step-info">
+
+      <div className="mt-4">
         Step: {currentStep + 1} / {steps.length}
       </div>
     </div>
