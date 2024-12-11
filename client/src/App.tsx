@@ -20,6 +20,9 @@ import Introsort from "./components/algorithm/sortingAlgorithm/Introsort";
 import HomePage from "./components/HomePage/HomePage";
 import Navbar from "./components/NavBar/Navbar";
 import Heap from "./components/algorithm/Heap";
+import BinarySearch from "./components/algorithm/searchAlgorithm/BinarySearch";
+import LinearSearch from "./components/algorithm/searchAlgorithm/LinearSearch";
+import DepthFirstSearchVisualizer from "./components/algorithm/searchAlgorithm/DepthFirstSearch";
 
 function App() {
   return (
@@ -43,6 +46,9 @@ function App() {
         <Route path="/pigeonhole-sort" element={<PigeonholeSort />} />
         <Route path="/introsort" element={<Introsort />} />
         <Route path="/heap" element={<Heap />} />
+        <Route path="/binary-search" element={<BinarySearch />} />
+        <Route path="/linear-search" element={<LinearSearch />} />
+        <Route path="/depth-first-search" element={<DepthFirstSearchVisualizer />} />
       </Routes>
     </Router>
   );

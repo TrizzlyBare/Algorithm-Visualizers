@@ -1,0 +1,110 @@
+.container {
+    padding: 24px;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .input {
+    width: 120px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .array-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  
+  .array-item {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  
+  .current-item {
+    background-color: #bfdbfe;
+    border-color: #3b82f6;
+    transform: translateY(-4px);
+  }
+  
+  .found-item {
+    background-color: #08a940;
+    border-color: #08ce4d;
+  }
+  
+  .discarded-item {
+    background-color: #7e1212;
+    opacity: 0.5;
+  }
+  
+  .button-group {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  
+  .start-button {
+    background-color: #3b82f6;
+  }
+  
+  .start-button:hover:not(.disabled) {
+    background-color: #2563eb;
+  }
+  
+  .start-button.disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+  }
+  
+  .generate-button {
+    background-color: #6b7280;
+  }
+  
+  .generate-button:hover {
+    background-color: #4b5563;
+    transform: translateY(-2px);
+  }
+  
+  .message {
+    min-height: 40px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #4b5563;
+  }

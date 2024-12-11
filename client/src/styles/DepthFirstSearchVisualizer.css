@@ -1,0 +1,240 @@
+.container {
+    padding: 24px;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .input {
+    width: 120px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .array-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .array-item {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  
+  .current-item {
+    background-color: #bfdbfe;
+    border-color: #3b82f6;
+  }
+  
+  .found-item {
+    background-color: #08a940;
+    border-color: #08ce4d;
+  }
+  
+  .checked-item {
+    background-color: #40add4;
+  }
+  
+  .button-group {
+    margin-bottom: 20px;
+  }
+  
+  .button {
+    padding: 8px 16px;
+    margin-right: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+  }
+  
+  .start-button {
+    background-color: #3b82f6;
+  }
+  
+  .start-button:hover:not(.disabled) {
+    background-color: #2563eb;
+  }
+  
+  .start-button.disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+  }
+  
+  .generate-button {
+    background-color: #6b7280;
+  }
+  
+  .generate-button:hover {
+    background-color: #4b5563;
+  }
+  
+  .status-success {
+    color: #16a34a;
+    font-size: 14px;
+  }
+  
+  .status-error {
+    color: #dc2626;
+    font-size: 14px;
+  }
+  
+  .status-searching {
+    color: #2563eb;
+    font-size: 14px;
+  }
+  
+  /* Graph representation specific styles */
+  .grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .grid-row {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .grid-cell {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .wall-cell {
+    background-color: #4b5563;
+    border-color: #374151;
+  }
+  
+  .visited-cell {
+    background-color: #40add4;
+  }
+  
+  .path-cell {
+    background-color: #fde68a;
+    border-color: #fcd34d;
+  }
+  
+  .start-cell {
+    background-color: #22c55e;
+    border-color: #16a34a;
+  }
+  
+  .end-cell {
+    background-color: #ef4444;
+    border-color: #dc2626;
+  }
+  
+  /* Matrix representation styles */
+  .matrix-container {
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+  
+  .matrix-table {
+    border-collapse: collapse;
+    margin: 0 auto;
+  }
+  
+  .matrix-cell {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 12px;
+    background-color: #f8f9fa;
+  }
+  
+  .matrix-cell-connected {
+    background-color: #bfdbfe;
+  }
+  
+  /* Adjacency list styles */
+  .list-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 16px;
+    margin: 20px 0;
+  }
+  
+  .list-item {
+    margin-bottom: 8px;
+    font-size: 14px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .list-node {
+    font-weight: 500;
+    min-width: 60px;
+  }
+  
+  .list-neighbors {
+    color: #6b7280;
+  }
+  
+  /* Select group styles */
+  .select-group {
+    margin-bottom: 20px;
+  }
+  
+  .select {
+    width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+  }
+  
+  /* Animation for visited cells */
+  @keyframes visitedAnimation {
+    0% {
+      transform: scale(0.3);
+      background-color: #bfdbfe;
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+      background-color: #40add4;
+    }
+  }
+  
+  .cell-visiting {
+    animation: visitedAnimation 0.5s ease-out forwards;
+  }
