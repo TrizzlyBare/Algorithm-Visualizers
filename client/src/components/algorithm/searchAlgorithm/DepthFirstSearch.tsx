@@ -1,208 +1,320 @@
-import { useState, useEffect, ChangeEvent } from 'react';
-import { GraphRepresentation } from './GraphRepresentation.tsx';
-import { Node, Grid, Position, RepresentationType } from './types.tsx';
-import '../../../styles/DepthFirstSearchVisualizer.css';
+import React, { useState, useCallback, useEffect } from 'react';
 
-const DepthFirstSearchVisualizer = () => {
-  const [grid, setGrid] = useState<Grid>([]);
-  const [visitedNodes, setVisitedNodes] = useState<Position[]>([]);
-  const [currentNode, setCurrentNode] = useState<Position | null>(null);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [isComplete, setIsComplete] = useState<boolean>(false);
-  const [pathFound, setPathFound] = useState<boolean>(false);
-  const [startNode] = useState<Position>({ row: 0, col: 0 });
-  const [endNode] = useState<Position>({ row: 9, col: 9 });
-  const [representation, setRepresentation] = useState<RepresentationType>('visual');
+interface Cell {
+  row: number;
+  col: number;
+  isWall: boolean;
+  isVisited: boolean;
+  isPath: boolean;
+  isStart: boolean;
+  isEnd: boolean;
+}
 
-  useEffect(() => {
-    initializeGrid();
-  }, []);
+const DFSVisualizer = () => {
+  const [grid, setGrid] = useState<Cell[][]>([]);
+  const [startNode, setStartNode] = useState<[number, number] | null>(null);
+  const [endNode, setEndNode] = useState<[number, number] | null>(null);
+  const [isVisualizing, setIsVisualizing] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<'wall' | 'start' | 'end'>('wall');
+  const [status, setStatus] = useState<string>('');
+  const [isMousePressed, setIsMousePressed] = useState(false);
 
-  const initializeGrid = () => {
-    const newGrid: Grid = [];
-    for (let row = 0; row < 10; row++) {
-      const currentRow: Node[] = [];
-      for (let col = 0; col < 10; col++) {
+  const GRID_ROWS = 10;
+  const GRID_COLS = 15;
+  const ANIMATION_SPEED_MS = 100;
+
+  // Initialize grid
+  const initializeGrid = useCallback(() => {
+    const newGrid: Cell[][] = [];
+    for (let row = 0; row < GRID_ROWS; row++) {
+      const currentRow: Cell[] = [];
+      for (let col = 0; col < GRID_COLS; col++) {
         currentRow.push({
           row,
           col,
           isWall: false,
           isVisited: false,
-          isPath: false
+          isPath: false,
+          isStart: false,
+          isEnd: false
         });
       }
       newGrid.push(currentRow);
     }
     setGrid(newGrid);
-  };
+    setStartNode(null);
+    setEndNode(null);
+    setStatus('');
+  }, []);
 
-  const resetSearch = () => {
-    setVisitedNodes([]);
-    setCurrentNode(null);
-    setIsSearching(false);
-    setIsComplete(false);
-    setPathFound(false);
-    const newGrid = grid.map(row =>
-      row.map(node => ({
-        ...node,
-        isVisited: false,
-        isPath: false
-      }))
-    );
+  useEffect(() => {
+    initializeGrid();
+  }, [initializeGrid]);
+
+  const handleCellClick = (row: number, col: number) => {
+    if (isVisualizing) return;
+
+    const newGrid = [...grid];
+    
+    if (selectedTool === 'start') {
+      // Remove old start node if exists
+      if (startNode) {
+        newGrid[startNode[0]][startNode[1]].isStart = false;
+      }
+      newGrid[row][col] = {
+        ...newGrid[row][col],
+        isStart: true,
+        isWall: false,
+        isEnd: false
+      };
+      setStartNode([row, col]);
+    } else if (selectedTool === 'end') {
+      // Remove old end node if exists
+      if (endNode) {
+        newGrid[endNode[0]][endNode[1]].isEnd = false;
+      }
+      newGrid[row][col] = {
+        ...newGrid[row][col],
+        isEnd: true,
+        isWall: false,
+        isStart: false
+      };
+      setEndNode([row, col]);
+    } else {
+      // Toggle wall
+      if (!newGrid[row][col].isStart && !newGrid[row][col].isEnd) {
+        newGrid[row][col] = {
+          ...newGrid[row][col],
+          isWall: !newGrid[row][col].isWall
+        };
+      }
+    }
+    
     setGrid(newGrid);
   };
 
-  const generateNewMaze = () => {
-    resetSearch();
-    const newGrid = grid.map(row =>
-      row.map(node => ({
-        ...node,
-        isWall: Math.random() < 0.3
-      }))
-    );
-    newGrid[startNode.row][startNode.col].isWall = false;
-    newGrid[endNode.row][endNode.col].isWall = false;
-    setGrid(newGrid);
+  const handleMouseDown = (row: number, col: number) => {
+    setIsMousePressed(true);
+    handleCellClick(row, col);
   };
+
+  const handleMouseEnter = (row: number, col: number) => {
+    if (isMousePressed && selectedTool === 'wall') {
+      handleCellClick(row, col);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsMousePressed(false);
+  };
+
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const dfs = async (
     row: number,
     col: number,
-    visited: Set<string> = new Set(),
-    path: Position[] = []
+    visited: Set<string>,
+    path: [number, number][],
+    endRow: number,
+    endCol: number
   ): Promise<boolean> => {
     if (
-      row < 0 ||
-      row >= grid.length ||
-      col < 0 ||
-      col >= grid[0].length ||
+      row < 0 || row >= GRID_ROWS ||
+      col < 0 || col >= GRID_COLS ||
       grid[row][col].isWall ||
       visited.has(`${row},${col}`)
     ) {
       return false;
     }
 
-    setCurrentNode({ row, col });
     visited.add(`${row},${col}`);
-    setVisitedNodes(prev => [...prev, { row, col }]);
-    path.push({ row, col });
+    path.push([row, col]);
 
-    // Update grid to show visited nodes
-    const newGrid = [...grid];
-    newGrid[row][col].isVisited = true;
-    setGrid(newGrid);
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    if (row === endNode.row && col === endNode.col) {
-      // Mark the path
-      path.forEach(pos => {
-        newGrid[pos.row][pos.col].isPath = true;
+    // Update visualization
+    if (!grid[row][col].isStart && !grid[row][col].isEnd) {
+      setGrid(prev => {
+        const newGrid = [...prev];
+        newGrid[row][col] = {
+          ...newGrid[row][col],
+          isVisited: true
+        };
+        return newGrid;
       });
-      setGrid(newGrid);
-      setPathFound(true);
+      await sleep(ANIMATION_SPEED_MS);
+    }
+
+    if (row === endRow && col === endCol) {
       return true;
     }
 
-    const directions: [number, number][] = [
-      [1, 0],  // down
+    const directions = [
       [0, 1],  // right
-      [-1, 0], // up
-      [0, -1]  // left
+      [1, 0],  // down
+      [0, -1], // left
+      [-1, 0]  // up
     ];
 
     for (const [dx, dy] of directions) {
-      if (await dfs(row + dx, col + dy, visited, [...path])) {
+      const newRow = row + dx;
+      const newCol = col + dy;
+      
+      if (await dfs(newRow, newCol, visited, path, endRow, endCol)) {
         return true;
       }
     }
 
+    path.pop();
     return false;
   };
 
-  const startSearch = async () => {
-    resetSearch();
-    setIsSearching(true);
-    const result = await dfs(startNode.row, startNode.col);
-    setIsComplete(true);
-    setIsSearching(false);
-    setPathFound(result);
-  };
-
-  const toggleWall = (row: number, col: number) => {
-    if (!isSearching && !(row === startNode.row && col === startNode.col) && 
-        !(row === endNode.row && col === endNode.col)) {
-      const newGrid = [...grid];
-      newGrid[row][col].isWall = !newGrid[row][col].isWall;
-      setGrid(newGrid);
+  const visualizeDFS = async () => {
+    if (!startNode || !endNode) {
+      setStatus('Please set both start and end points');
+      return;
     }
-  };
 
-  const handleRepresentationChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setRepresentation(e.target.value as RepresentationType);
+    setIsVisualizing(true);
+    setStatus('Searching...');
+
+    // Reset previous visualization
+    const newGrid = grid.map(row =>
+      row.map(cell => ({
+        ...cell,
+        isVisited: false,
+        isPath: false
+      }))
+    );
+    setGrid(newGrid);
+
+    const visited = new Set<string>();
+    const path: [number, number][] = [];
+
+    const found = await dfs(
+      startNode[0],
+      startNode[1],
+      visited,
+      path,
+      endNode[0],
+      endNode[1]
+    );
+
+    if (found) {
+      // Visualize the path
+      for (const [row, col] of path) {
+        if (!grid[row][col].isStart && !grid[row][col].isEnd) {
+          setGrid(prev => {
+            const newGrid = [...prev];
+            newGrid[row][col] = {
+              ...newGrid[row][col],
+              isPath: true
+            };
+            return newGrid;
+          });
+          await sleep(ANIMATION_SPEED_MS / 2);
+        }
+      }
+      setStatus('Path found!');
+    } else {
+      setStatus('No path found!');
+    }
+
+    setIsVisualizing(false);
   };
 
   return (
     <div className="container">
-      <div className="controls">
-        <div className="select-group">
-          <label className="label">Representation:</label>
-          <select
-            value={representation}
-            onChange={handleRepresentationChange}
-            className="select"
-          >
-            <option value="visual">Visual Grid</option>
-            <option value="matrix">Adjacency Matrix</option>
-            <option value="list">Adjacency List</option>
-          </select>
-        </div>
-
-        <div className="button-group">
-          <button
-            onClick={startSearch}
-            disabled={isSearching || isComplete}
-            className={`button start-button ${
-              isSearching || isComplete ? 'disabled' : ''
-            }`}
-          >
-            Start DFS
-          </button>
-          <button
-            onClick={generateNewMaze}
-            className="button generate-button"
-          >
-            Generate New Maze
-          </button>
-        </div>
+      <h1>DFS Path Finder</h1>
+      
+      <div className="select-group">
+        <select 
+          className="select"
+          value={selectedTool}
+          onChange={(e) => setSelectedTool(e.target.value as 'wall' | 'start' | 'end')}
+          disabled={isVisualizing}
+        >
+          <option value="wall">Wall Tool</option>
+          <option value="start">Start Point</option>
+          <option value="end">End Point</option>
+        </select>
       </div>
 
-      <GraphRepresentation
-        grid={grid}
-        representation={representation}
-        currentNode={currentNode}
-        visitedNodes={visitedNodes}
-        startNode={startNode}
-        endNode={endNode}
-        toggleWall={toggleWall}
-      />
+      <div className="button-group">
+        <button
+          className={`button start-button ${isVisualizing ? 'disabled' : ''}`}
+          onClick={visualizeDFS}
+          disabled={isVisualizing}
+        >
+          Visualize DFS
+        </button>
+        <button
+          className="button generate-button"
+          onClick={initializeGrid}
+          disabled={isVisualizing}
+        >
+          Reset Grid
+        </button>
+      </div>
 
-      <div className="status">
-        {isComplete && (
-          <p className={pathFound ? 'status-success' : 'status-error'}>
-            {pathFound
-              ? 'Path found to target!'
-              : 'No path available to target.'}
-          </p>
-        )}
-        {isSearching && (
-          <p className="status-searching">
-            Searching... Current position: ({currentNode?.row}, {currentNode?.col})
-          </p>
-        )}
+      <div className={`status-${status.includes('found') ? 'success' : status === 'Searching...' ? 'searching' : 'error'}`}>
+        {status}
+      </div>
+
+      <div 
+        className="grid-container"
+        onMouseLeave={() => setIsMousePressed(false)}
+        onMouseUp={handleMouseUp}
+      >
+        {grid.map((row, rowIdx) => (
+          <div key={rowIdx} className="grid-row">
+            {row.map((cell, colIdx) => (
+              <div
+                key={`${rowIdx}-${colIdx}`}
+                className={`grid-cell ${
+                  cell.isWall ? 'wall-cell' : ''
+                } ${
+                  cell.isVisited && !cell.isPath ? 'visited-cell' : ''
+                } ${
+                  cell.isPath ? 'path-cell' : ''
+                } ${
+                  cell.isStart ? 'start-cell' : ''
+                } ${
+                  cell.isEnd ? 'end-cell' : ''
+                } ${
+                  cell.isVisited ? 'cell-visiting' : ''
+                }`}
+                onMouseDown={() => handleMouseDown(rowIdx, colIdx)}
+                onMouseEnter={() => handleMouseEnter(rowIdx, colIdx)}
+                onMouseUp={handleMouseUp}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div className="legend">
+        <div className="legend-item">
+          <div className="legend-color start-cell"></div>
+          <span>Start Point</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color end-cell"></div>
+          <span>End Point</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color wall-cell"></div>
+          <span>Wall</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color visited-cell"></div>
+          <span>Visited</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color path-cell"></div>
+          <span>Path</span>
+        </div>
       </div>
     </div>
   );
 };
 
-export default DepthFirstSearchVisualizer;
+export default DFSVisualizer;
