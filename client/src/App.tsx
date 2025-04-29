@@ -20,6 +20,7 @@ import Introsort from "./components/algorithm/sortingAlgorithm/Introsort";
 import HomePage from "./components/HomePage/HomePage";
 import Navbar from "./components/NavBar/Navbar";
 import Heap from "./components/algorithm/Heap";
+import Array from "./components/algorithm/ArrayStructure/ArrayVisualization";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/pigeonhole-sort" element={<PigeonholeSort />} />
         <Route path="/introsort" element={<Introsort />} />
         <Route path="/heap" element={<Heap />} />
+        <Route path="/array" element={<Array />} />
       </Routes>
     </Router>
   );
